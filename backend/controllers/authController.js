@@ -122,11 +122,12 @@ const login = async (req, res) => {
       [token, user.uid, expiryDate]
     );
 
-    // Set HTTP-only cookie
+    // Set HTTP-only cookie (sameSite: 'none' + secure required for cross-origin, e.g. Vercel + Render)
+    const isProduction = process.env.NODE_ENV === 'production';
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'strict',
       maxAge: 24 * 60 * 60 * 1000 // 24 hours
     });
 
