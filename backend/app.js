@@ -29,6 +29,28 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Root – so visiting the Render URL shows a message instead of "Route not found"
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'KodbBank API',
+    docs: {
+      health: 'GET /api/health',
+      register: 'POST /api/auth/register',
+      login: 'POST /api/auth/login',
+      balance: 'GET /api/user/balance (requires login)'
+    }
+  });
+});
+
+app.get('/api', (req, res) => {
+  res.json({
+    success: true,
+    message: 'KodbBank API',
+    endpoints: ['/api/health', '/api/auth/register', '/api/auth/login', '/api/user/balance']
+  });
+});
+
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/user', require('./routes/userRoutes'));
