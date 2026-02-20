@@ -8,7 +8,7 @@ require('dotenv').config();
 
 const app = express();
 
-// Middleware - allow Vite (5173) and common dev origins
+// Middleware - allow Vite (5173), Vercel, and common dev origins
 const allowedOrigins = [
   process.env.FRONTEND_URL,
   'http://localhost:3000',
@@ -18,7 +18,9 @@ const allowedOrigins = [
 ].filter(Boolean);
 app.use(cors({
   origin: (origin, cb) => {
-    if (!origin || allowedOrigins.includes(origin)) return cb(null, origin || allowedOrigins[0] || true);
+    if (!origin) return cb(null, true);
+    if (allowedOrigins.includes(origin)) return cb(null, origin);
+    if (origin.endsWith('.vercel.app')) return cb(null, origin);
     cb(new Error('Not allowed by CORS'));
   },
   credentials: true
