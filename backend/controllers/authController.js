@@ -122,12 +122,12 @@ const login = async (req, res) => {
       [token, user.uid, expiryDate]
     );
 
-    // Set HTTP-only cookie (sameSite: 'none' + secure required for cross-origin, e.g. Vercel + Render)
-    const isProduction = process.env.NODE_ENV === 'production';
+    // Cross-origin (Vercel + Render): cookie must be SameSite=None; Secure so browser sends it
+    const isCrossOrigin = !!req.get('origin'); // e.g. frontend on Vercel calling backend on Render
     res.cookie('token', token, {
       httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? 'none' : 'strict',
+      secure: true, // required for SameSite=None
+      sameSite: isCrossOrigin ? 'none' : 'strict',
       maxAge: 24 * 60 * 60 * 1000 // 24 hours
     });
 
